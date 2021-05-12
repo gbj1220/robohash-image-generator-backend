@@ -6,16 +6,14 @@ const logger = require("morgan");
 const mongoose = require("mongoose");
 const cors = require("cors");
 
+require("dotenv").config();
+
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users/usersRouter");
-
-require("dotenv").config();
 
 mongoose
   .connect(process.env.MONGO_DB, {
     useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
     useUnifiedTopology: true,
   })
   .then(() => {
@@ -28,6 +26,7 @@ mongoose
 const app = express();
 
 // view engine setup
+
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 

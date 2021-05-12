@@ -1,6 +1,7 @@
-const bcrypt = require("bcryptjs");
 const User = require("../model/User");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
+
 module.exports = {
   signUp: async (req, res) => {
     try {
@@ -8,12 +9,10 @@ module.exports = {
 
       let hashedPassword = await bcrypt.hash(req.body.password, salted);
 
-      const { firstName, lastName, phoneNumber, email } = req.body;
+      const { userName, email } = req.body;
 
       let createdUser = new User({
-        firstName,
-        lastName,
-        phoneNumber,
+        username,
         email,
         password: hashedPassword,
       });
@@ -26,43 +25,43 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
-      res.status(500).json({ message: error.message });
+      res.status(500).json({ Message: error.message });
     }
   },
 
   login: async (req, res) => {
     try {
       let foundUser = await User.findOne({ email: req.body.email });
-
       if (!foundUser) {
-        throw { message: "User not found." };
+        throw "User does not exist!";
       }
 
-      let comparedPassword = await bcrypt.compare(
+      let comparePassword = await bcrypt.compare(
         req.body.password,
         foundUser.password
       );
 
-      if (!comparedPassword) {
-        throw "Incorrect password";
+      if (!comparePassword) {
+        throw "That is not the correct password. Please try again.";
       }
 
-      const jwtToken = jwt.sign(
+      let jwtToken = jwt.sign(
         {
+          username: foundUser.username,
           email: foundUser.email,
         },
         process.env.JWT_SECRET,
         {
-          expiresIn: "12h",
+          expiresIn: "1d",
         }
       );
 
       res.json({
-        message: "User Created",
+        message: "Logged In",
         jwtToken,
       });
-    } catch (e) {
-      res.status(500).json({ Message: e });
+    } catch (error) {
+      res.status(500).json({ Message: error.message });
     }
   },
 };
