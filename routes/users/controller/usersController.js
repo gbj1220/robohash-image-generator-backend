@@ -9,10 +9,12 @@ module.exports = {
 
       let hashedPassword = await bcrypt.hash(req.body.password, salted);
 
-      const { userName, email } = req.body;
+      const { email, firstName, lastName, mobileNumber } = req.body;
 
       let createdUser = new User({
-        username,
+        firstName,
+        lastName,
+        mobileNumber,
         email,
         password: hashedPassword,
       });
@@ -62,6 +64,14 @@ module.exports = {
       });
     } catch (error) {
       res.status(500).json({ Message: error.message });
+    }
+  },
+
+  checkUserIsLoggedIn: (req, res) => {
+    try {
+      console.log("fuck");
+    } catch (error) {
+      console.log(error);
     }
   },
 };
